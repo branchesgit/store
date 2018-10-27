@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "es6",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "baseUrl": ".",
+    "paths": {
+    },
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators" :true
+  }
+}
