@@ -6,6 +6,8 @@ import {IStore} from "../../model/interface";
 import {Form, Input, Button, Icon} from "antd";
 import LoginService from "./services/login";
 import md5 from "js-md5";
+import {IEmployee} from "../../model/interface/ILogin";
+import {Modal} from "antd";
 
 const FormItem = Form.Item;
 
@@ -60,6 +62,7 @@ class Login extends React.Component<any, any> {
     handleSubmit = e => {
 
         e.preventDefault();
+
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 console.log('Received values of form: ', values);
@@ -71,10 +74,20 @@ class Login extends React.Component<any, any> {
                 password: md5(values.password),
                 storeID: state.storeId,
             };
-            debugger;
 
-            loginService.login(values);
+            const fail = res => {
+                Modal.error({
+                    title: "系统提示：",
+                    content: "登录错误～"
+                })
+            };
+
+            loginService.login(values).then(res => {
+                const ret: IEmployee = res.Result;
+                console.log(ret);
+            });
         });
+
     }
 
     render() {
