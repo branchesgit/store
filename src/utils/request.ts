@@ -16,15 +16,31 @@ export default class Request {
     }
 
     initAxios() {
+        axios.interceptors.request.use(config => {
+            let data = config.data || {};
+            data = {
+                ...data,
+                storeID: sessionStorage.getItem("storeID"),
+                token: sessionStorage.getItem("token"),
+                systemID: sessionStorage.getItem("systemID"),
+            };
 
+            config.data = data;
+
+            return config;
+        })
     }
 
     post(url: string, data?: any, config?: AxiosRequestConfig) {
-        return axios.post(url, data || {}, config || {});
+        return axios.post(url, data || {}, config || {}).then(res => res.data);
     }
 
     get(url: string, data?: any) {
-        return axios.get(url, data);
+
+        data = data || {};
+
+
+        return axios.get(url, {params: data}).then(res => res.data);
     }
 
 }

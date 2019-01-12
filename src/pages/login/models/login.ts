@@ -1,8 +1,12 @@
-import LoginService from "../services/login";
-import Region from "../../../model/login/Region";
+import LoginService from "../../../services/login";
+import Region from "../components/models/Region";
 
 const loginService = LoginService.getInstance();
+export const LOGIN_NAMESPACE = "login";
+
 export default {
+    namespace: LOGIN_NAMESPACE,
+
     state: {
         regions: []
     },
@@ -13,11 +17,11 @@ export default {
         }
     },
     effects: {
-        *fetch({}, {call, put}) {
-            const {data} = yield call(loginService.fetch);
+        * fetch({}, {call, put}) {
+            const response = yield call(loginService.fetch);
             yield put({
                 type: "save",
-                regions: data
+                regions: response.result
             });
         },
     }

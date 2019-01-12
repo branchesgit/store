@@ -1,4 +1,4 @@
-import Request from "../../../utils/request";
+import Request from "../utils/request";
 
 export default class LoginService {
     private static instance: LoginService = null;
@@ -12,11 +12,11 @@ export default class LoginService {
     }
 
     fetch() {
-        return Request.getInstance().get(`/region/get`);
+        return Request.getInstance().get(`/storeserv/rest/get/regions`);
     }
 
     fetchStores({regionID}) {
-        return Request.getInstance().get(`/stores/get?regionID=${regionID}`);
+        return Request.getInstance().get(`/storeserv/rest/get/stores`, {regionID});
     }
 
     login(values) {
@@ -27,6 +27,5 @@ export default class LoginService {
         };
 
         return Request.getInstance().post('/login/post', user);
-
     }
 }

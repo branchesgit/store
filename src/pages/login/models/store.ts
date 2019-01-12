@@ -1,8 +1,12 @@
-import LoginService from "../services/login";
+import LoginService from "../../../services/login";
 
 const loginService = LoginService.getInstance();
 
+export const STORE_NAMESPACE = "store";
+
 export default {
+    namespace: STORE_NAMESPACE,
+
     state: {
         stores: [],
     },
@@ -12,6 +16,7 @@ export default {
             state = {
                 ...state,
                 stores,
+                storeID: stores.length ? stores[0].storeID + "" : "",
             };
 
             return state;
@@ -19,11 +24,11 @@ export default {
     },
 
     effects: {
-        *fetch({playload: {regionID}}, {call, put}) {
-            const {data} = yield call(loginService.fetchStores, {regionID})
+        * fetch({payload: {regionID}}, {call, put}) {
+            const response = yield call(loginService.fetchStores, {regionID});
             yield put({
                 type: "save",
-                stores: data,
+                stores: response.result,
             })
         }
     }

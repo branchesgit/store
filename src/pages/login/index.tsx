@@ -1,15 +1,17 @@
 import * as React from "react";
 import {connect} from 'dva';
-import LoginHandle from "./handles/LoginHandle";
-import Region from "../../model/login/Region";
-import {IStore} from "../../model/interface";
-import {Form, Input, Button, Icon} from "antd";
-import LoginService from "./services/login";
+import {IStore} from "../../interfaces/interface";
+import {Form, Select, Input, Button, Icon} from "antd";
+import LoginService from "../../services/login";
 import md5 from "js-md5";
 import {IEmployee} from "../../model/interface/ILogin";
 import {Modal} from "antd";
+import router from "umi/router";
+import Regions from "./components/Regions";
+import {LOGIN_NAMESPACE} from "./models/login";
 
 const FormItem = Form.Item;
+const Option = Select.Option;
 
 @connect(({login, store, loading}) => {
     return {
@@ -19,7 +21,7 @@ const FormItem = Form.Item;
     }
 })
 
-class Login extends React.Component<any, any> {
+class Index extends React.Component<any, any> {
     constructor(props) {
         super(props);
 
@@ -28,45 +30,16 @@ class Login extends React.Component<any, any> {
 
     componentWillMount() {
         this.props.dispatch({
-            type: "login/fetch"
+            type: `${LOGIN_NAMESPACE}/fetch`
         });
     }
 
-    inited: boolean;
-
-    componentWillReceiveProps(newProps) {
-        const regions = newProps.regions;
-
-        if (regions && regions.length && !this.inited) {
-            this.inited = true;
-            const selectedIds = Region.getInstance().initRegionIDs(regions[0]);
-            this.setState({selectedIds});
-            // 向后台发送请求, 获取店铺信息；
-            const len = selectedIds.length;
-            const regionID = selectedIds[len - 1];
-            this.props.dispatch({
-                type: "store/fetch",
-                playload: {regionID}
-            });
-        }
-
-        const stores: IStore[] = newProps.stores;
-        if (stores && stores.length) {
-            const storeId = stores[0].Id;
-            this.setState({storeId});
-        } else {
-            this.setState({storeId: ""});
-        }
-    }
 
     handleSubmit = e => {
-
         e.preventDefault();
 
         this.props.form.validateFields((err, values) => {
-            if (!err) {
-                console.log('Received values of form: ', values);
-            }
+            if (err) return;
             const state = this.state;
             const loginService = LoginService.getInstance();
             values = {
@@ -83,19 +56,47 @@ class Login extends React.Component<any, any> {
             };
 
             loginService.login(values).then(res => {
-                const ret: IEmployee = res.Result;
-                console.log(ret);
+                const ret: IEmployee = res.data.Result;
+
+                if (ret) {
+                    for (let name in ret) {
+                        debugger;
+                        let n = name.replace(/^([A-Z])/g, (all, letter) => {
+                            return letter.toLowerCase();
+                        });
+
+                        sessionStorage.setItem(n, ret[name])
+                    }
+                    router.push("/management")
+                }
             });
+
         });
 
     }
 
+    changeStore(storeID) {
+        this.setState({stroeID});
+    }
+
     render() {
+        const {regions, stores, storeID} = this.props;
         const {getFieldDecorator} = this.props.form;
+
+        console.log(stores);
+
         return (
             <div className="login">
-                {LoginHandle.getInstance().renderRegions(this)}
-                {LoginHandle.getInstance().renderStores(this)}
+                <Regions {...{regions}}/>
+                <div><span>店名：</span>
+                    <Select value={storeID} onChange={this.changeStore.bind(this)}>
+                        {
+                            (stores || []).map((s: IStore, _) => {
+                                return <Option value={s.storeID + ""}>{s.storeName}</Option>
+                            })
+                        }
+                    </Select>
+                </div>
                 <Form onSubmit={this.handleSubmit} className="login-form" action="login/post" method="post">
                     <FormItem>
                         {getFieldDecorator('userName', {
@@ -124,5 +125,5 @@ class Login extends React.Component<any, any> {
     }
 }
 
-export default Form.create()(Login);
+export default Form.create()(Index);
 
