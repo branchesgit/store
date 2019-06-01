@@ -1,21 +1,20 @@
-var server =  {
+var server = {
     "target": "http://localhost:9000/",
     "changeOrigin": true
 };
 
-var debugServer =  {
-    "target": "http://localhost:8080/",
-    "changeOrigin": true
+var debugServer = {
+    "target": "http://localhost:8090/",
+    "changeOrigin": true,
+    "secure": false,
 };
 
-var proxyService = false ?  debugServer : server;
+var proxyService = process.env.NODE_DEV === "development" ? debugServer : server;
 
 export default {
     history: "hash",
     proxy: {
-        "/region": proxyService,
-        "/stores": proxyService,
-        "/login":proxyService
+        "/storeserv": debugServer
     },
 
     plugins: [
@@ -27,9 +26,17 @@ export default {
             dll: false,
             pwa: false,
             routes: {
-                exclude: [],
+                exclude: [
+                    /handles/,
+                    /models/,
+                    /services/,
+                    /component/,
+                    /components/
+                ],
             },
             hardSource: false,
         }],
     ],
+
+    theme: "./theme.js"
 }

@@ -79,14 +79,15 @@ export const MENUS = [
     },
     {
         name: "系统管理",
+
         children: [
             {
-                name: "运行参数设置",
-                path: "/management/system/running/Running"
+                name: "基本资料设置",
+                path: "/management/system/material"
             },
             {
-                name: "基本资料设置",
-                path: "/management/system/material/Material"
+                name: "运行参数设置",
+                path: "/management/system/running"
             },
             {
                 name: "首饰档案管理",

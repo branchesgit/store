@@ -17,17 +17,28 @@ export default class Request {
 
     initAxios() {
         axios.interceptors.request.use(config => {
-            let data = config.data || {};
-            data = {
-                ...data,
-                storeID: sessionStorage.getItem("storeID"),
-                token: sessionStorage.getItem("token"),
-                systemID: sessionStorage.getItem("systemID"),
-            };
+            if (config.method == "get") {
+                let params = config.params || {};
+                params = {
+                    ...params,
+                    storeID: params.storeID || sessionStorage.getItem("storeID") || "",
+                    token: sessionStorage.getItem("token") || "",
+                };
 
-            config.data = data;
+                config.params = params;
 
-            return config;
+                return config;
+            } else {
+                let data = config.data || {};
+
+                config.data = {
+                    storeID: data.storeID || sessionStorage.getItem("storeID") || "",
+                    token: sessionStorage.getItem("token") || "",
+                    ...data
+                }
+
+                return config;
+            }
         })
     }
 
@@ -36,9 +47,7 @@ export default class Request {
     }
 
     get(url: string, data?: any) {
-
         data = data || {};
-
 
         return axios.get(url, {params: data}).then(res => res.data);
     }

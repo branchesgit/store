@@ -1,7 +1,8 @@
 import Request from "../utils/request";
 
 export default class MaterialServer {
-    private constructor(){}
+    private constructor() {
+    }
 
     private static instance: MaterialServer = null;
 
@@ -13,7 +14,15 @@ export default class MaterialServer {
         return MaterialServer.instance;
     }
 
-    queryFeatures(){
-        Request.getInstance().get("/bee/settings/QueryFeatures");
+    queryFeatures() {
+        return Request.getInstance().get(`/storeserv/rest/get/materials`);
+    }
+
+    saveMaterial(parameter) {
+        return Request.getInstance().post('/storeserv/rest/save/material', {parameter});
+    }
+
+    updateMaterial(parameter) {
+        return Request.getInstance().post('/storeserv/rest/update/material', {parameter});
     }
 }

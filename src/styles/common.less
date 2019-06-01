@@ -50,3 +50,55 @@ body {
     margin-top: 10px;
     min-height: 500px;
 }
+
+ul, li, div, p, form {
+    padding: 0;
+    margin: 0;
+}
+
+.inlines {
+    display: inline-block;
+    & > li {
+        display: inline-block;
+
+    }
+}
+
+body {
+    .ant-form-item-label,
+    .ant-form-item-control-wrapper,
+    .ant-form-item-wrapper,
+    .ant-form-item-contrl {
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    .ant-modal-header {
+        background: @primary-color;
+        text-align: center;
+
+    }
+
+    .ant-form {
+        .ant-row {
+            vertial-align: top;
+        }
+    }
+    .ant-modal-title, .ant-modal-close-x {
+        color: #fff;
+    }
+
+    .ant-table {
+        thead {
+            th {
+                background-color: @primary-color;
+                color: #fff;
+            }
+        }
+
+        th, td {
+            border: 1px solid #e8e8e8;
+        }
+    }
+
+}

@@ -6,6 +6,7 @@
     "jsx": "react",
     "baseUrl": ".",
     "paths": {
+        "@/*": ["src/*"]
     },
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators" :true

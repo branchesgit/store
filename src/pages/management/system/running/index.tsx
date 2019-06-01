@@ -15,7 +15,7 @@ export const PRODUCT_CODE = "product_code";
     return {...run};
 })
 
-export default class Running extends React.Component<any, any> {
+export default class Index extends React.Component<any, any> {
 
     constructor(props) {
         super(props);

@@ -4,7 +4,6 @@ import {IStore} from "../../interfaces/interface";
 import {Form, Select, Input, Button, Icon} from "antd";
 import LoginService from "../../services/login";
 import md5 from "js-md5";
-import {IEmployee} from "../../model/interface/ILogin";
 import {Modal} from "antd";
 import router from "umi/router";
 import Regions from "./components/Regions";
@@ -38,66 +37,66 @@ class Index extends React.Component<any, any> {
     handleSubmit = e => {
         e.preventDefault();
 
-        this.props.form.validateFields((err, values) => {
+        this.props.form.validateFields(async (err, values) => {
             if (err) return;
-            const state = this.state;
             const loginService = LoginService.getInstance();
             values = {
-                ...values,
+                storeID: values.storeID,
+                systemID: values.userName,
                 password: md5(values.password),
-                storeID: state.storeId,
             };
 
-            const fail = res => {
+            const res = await loginService.login(values);
+
+            if (res && res.status == "success") {
+                const result = res.result;
+                sessionStorage.setItem("storeID", result.storeID);
+                sessionStorage.setItem("systemID", result.systemID);
+                sessionStorage.setItem("token", result.token);
+                sessionStorage.setItem("userName", result.userName);
+
+                router.push("/management/");
+            } else {
                 Modal.error({
                     title: "系统提示：",
                     content: "登录错误～"
-                })
-            };
-
-            loginService.login(values).then(res => {
-                const ret: IEmployee = res.data.Result;
-
-                if (ret) {
-                    for (let name in ret) {
-                        debugger;
-                        let n = name.replace(/^([A-Z])/g, (all, letter) => {
-                            return letter.toLowerCase();
-                        });
-
-                        sessionStorage.setItem(n, ret[name])
-                    }
-                    router.push("/management")
-                }
-            });
-
+                });
+            }
         });
 
     }
 
     changeStore(storeID) {
-        this.setState({stroeID});
+        this.setState({storeID});
     }
 
     render() {
         const {regions, stores, storeID} = this.props;
         const {getFieldDecorator} = this.props.form;
 
-        console.log(stores);
-
         return (
             <div className="login">
                 <Regions {...{regions}}/>
-                <div><span>店名：</span>
-                    <Select value={storeID} onChange={this.changeStore.bind(this)}>
-                        {
-                            (stores || []).map((s: IStore, _) => {
-                                return <Option value={s.storeID + ""}>{s.storeName}</Option>
-                            })
-                        }
-                    </Select>
-                </div>
-                <Form onSubmit={this.handleSubmit} className="login-form" action="login/post" method="post">
+
+                <Form onSubmit={this.handleSubmit} className="login-form" method="post">
+                    <div>
+                        <span style={{lineHeight: "56px", heihgt: "56px"}}>店名：</span>
+
+                        <FormItem style={{display: "inline-block"}}>
+                            {getFieldDecorator('storeID', {
+                                initialValue: storeID,
+                                rules: [{required: true, message: 'Please select store!'}],
+                            })(
+                                <Select onChange={this.changeStore.bind(this)}>
+                                    {
+                                        (stores || []).map((s: IStore, _) => {
+                                            return <Option value={s.storeID + ""}>{s.storeName}</Option>
+                                        })
+                                    }
+                                </Select>
+                            )}
+                        </FormItem>
+                    </div>
                     <FormItem>
                         {getFieldDecorator('userName', {
                             rules: [{required: true, message: 'Please input your username!'}],

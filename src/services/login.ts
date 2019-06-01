@@ -20,12 +20,6 @@ export default class LoginService {
     }
 
     login(values) {
-        const user = {
-            userName: values.userName,
-            password: values.password,
-            storeId: values.storeID,
-        };
-
-        return Request.getInstance().post('/login/post', user);
+        return Request.getInstance().post('/storeserv/rest/post/login', values);
     }
 }

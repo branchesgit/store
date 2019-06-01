@@ -64,7 +64,7 @@ export default class Regions extends React.Component<any, any> {
         rets.unshift(regions);
 
         return (
-            <ul>
+            <ul className="inlines">
                 {
                     rets && rets.length && rets.map((ary: IRegion[], _) => {
                         return (
@@ -96,6 +96,7 @@ export default class Regions extends React.Component<any, any> {
 
         return (
             <div className="regions">
+                <span>地区：</span>
                 {
                     this.renderRegions()
                 }

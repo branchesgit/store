@@ -3,7 +3,7 @@ import {StaticRouter} from "react-router";
 import {ICondition, IDict} from "../../../../../interfaces/management/iManagement";
 import Dict from "../../../../../interfaces/management/models/Dict";
 import Condition from "../../../../../interfaces/management/models/Condition";
-import {MONEY_CODE, PRODUCT_CODE} from "../Running";
+import {MONEY_CODE, PRODUCT_CODE} from "../index";
 
 export default {
     namespace: "run",

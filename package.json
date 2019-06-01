@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "start": "umi dev",
+    "start": "umi dev  --NODE_ENV -development",
     "build": "umi build",
     "test": "umi test",
     "lint": "eslint --ext .js src mock tests",
@@ -31,6 +31,7 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "classnames": "^2.2.6",
     "enquire-js": "^0.2.1",
     "react-container-query": "^0.11.0"
