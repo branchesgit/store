@@ -65,7 +65,7 @@ export default class FeatureHandle implements IHandle {
         Store.getInstance().dispatch({
             type: `${MATERIALS}/removeMaterial`,
             payload: {
-                record: view.props.record,
+                ...view.props.record,
             }
         })
     }

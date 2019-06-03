@@ -25,4 +25,8 @@ export default class MaterialServer {
     updateMaterial(parameter) {
         return Request.getInstance().post('/storeserv/rest/update/material', {parameter});
     }
+
+    removeMaterial(record) {
+        return Request.getInstance().post('/storeserv/rest/delete/material', {id: record.id});
+    }
 }

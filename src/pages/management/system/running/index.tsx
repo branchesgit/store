@@ -1,18 +1,15 @@
 import * as React from "react";
 import {Tabs, Input, Checkbox, Button, Select} from "antd";
 import {connect} from "dva";
-import {ICondition, IDict} from "../../../../interfaces/management/iManagement";
-import RuningService from "../../../../services/running";
+import {RULES} from "@/pages/management/system/running/models/rules";
+import {IRule, IStoreRule} from "@/bean/interface/ISystem";
+import StoreRule from "@/bean/util/StoreRule";
 
 const Option = Select.Option;
 const TabPane = Tabs.TabPane;
 
-export const MONEY_CODE = "money";
-export const PRODUCT_CODE = "product_code";
-
-
-@connect(({run}) => {
-    return {...run};
+@connect(({rules}) => {
+    return {...rules};
 })
 
 export default class Index extends React.Component<any, any> {
@@ -20,83 +17,89 @@ export default class Index extends React.Component<any, any> {
     constructor(props) {
         super(props);
 
-        window.g_app._store.dispatch({type: "run/fetch"});
+        window.g_app._store.dispatch({type: `${RULES}/fetch`});
     }
 
-    handleChange(code, dictID) {
+    handleChange(key, code, e) {
         this.props.dispatch({
-            type: "run/changeDict",
-            payload: {
-                code,
-                dictID
-            }
+            type: `${RULES}/changeStoreRule`,
+            key,
+            code,
+            value: e,
         });
     }
 
-    changeBit(key, value) {
-        value = value.target.value;
+    saveStoreRules() {
         this.props.dispatch({
-            type: "run/changeBit",
-            payload: {
-                key,
-                value,
-            }
+            type: `${RULES}/saveStoreRules`,
+            storeRules: this.props.storeRules,
         })
     }
 
-    saveSettings() {
-        const {moneies, products, mb, pb} = this.props;
-        const settings: ICondition[] = this.props.settings;
-        let idx = moneies.findIndex((m: IDict) => m.selected);
-        let index = settings.findIndex(s => s.Code === MONEY_CODE);
-        settings[idx].DictPK = moneies[idx].Id;
-        settings[index].AdditionBit = parseInt(mb + "", 10);
+    handlePNChange(values) {
+        if (!values || !values.length) {
+            return;
+        }
 
-        idx = products.findIndex((m: IDict) => m.selected);
-        index = settings.findIndex(s => s.Code === PRODUCT_CODE);
-        settings[index].DictPK = products[idx].Id;
-        settings[index].AdditionBit = parseInt(pb + "", 10);
-
-        RuningService.getInstance().updateStoreSettings(settings);
+        this.handleChange("codeable", StoreRule.PRODUCTION_NAME_CODE, values.join(","))
     }
 
-    render() {
-        const {moneies, products, settings, mb, pb} = this.props;
-        let idx = (moneies || []).findIndex(m => m.selected);
-        const money = idx !== -1 ? moneies[idx].Id + "" : "";
-        idx = (products || []).findIndex(p => p.selected);
-        const pro = idx !== -1 ? products[idx].Id + "" : "";
 
+    render() {
+        const storeRules: IStoreRule = this.props.storeRules || [];
+        const money: IStoreRule = storeRules.find(sr => sr.code === StoreRule.MONEY_CODE) || {};
+        const production: IStoreRule = storeRules.find(sr => sr.code === StoreRule.PRODUCTION_CODE) || {};
+        const productionName: IStoreRule = storeRules.find(sr => sr.code === StoreRule.PRODUCTION_NAME_CODE) || {};
 
         return (
             <div className="running">
                 <h3>设置</h3>
-                <div>
-                    金额保留
-                    <span><Input value={mb} onChange={this.changeBit.bind(this, "mb")}/></span>
-                    位小数， 多余小数
-                    <Select value={money} onChange={this.handleChange.bind(this, MONEY_CODE)}>
-                        {
-                            (moneies || []).map((dict: IDict, _) =>
-                                <Option key={_} value={dict.Id + ""}>{dict.Desc}</Option>)
-                        }
-                    </Select>
-                </div>
-                <h4>成品编码品名生成规则</h4>
                 <ul>
                     <li>
-                        成品编码规则
-                        <Select value={pro} onChange={this.handleChange.bind(this, PRODUCT_CODE)}>
+                        <em>1</em>
+                        金额保留
+                        <span>
+                            <Input value={money.value}
+                                   onChange={this.handleChange.bind(this, 'value', StoreRule.MONEY_CODE)}/>
+                        </span>
+                        位小数， 多余小数
+                        <Select value={money.codeable + ""}
+                                onChange={this.handleChange.bind(this, 'codeable', StoreRule.MONEY_CODE)}>
                             {
-                                (products || []).map((dict: IDict, _) =>
-                                    <Option key={_} value={dict.Id + ""}>{dict.Desc}</Option>)
+                                (money.rules || []).map((rule: IRule, _) =>
+                                    <Option key={_} value={rule.code + ""}>{rule.name}</Option>)
                             }
                         </Select>
-                        加上<Input value={pb} onChange={this.changeBit.bind(this, "pb")}/>位流水码，流水码是否前置<Checkbox/></li>
-                    <li>品名生成规则</li>
+                    </li>
+                    <li>
+                        <em>2</em>
+                        成品编码规则
+                        <Select value={production.codeable + ""}
+                                onChange={this.handleChange.bind(this, 'codeable', StoreRule.PRODUCTION_CODE)}>
+                            {
+                                (production.rules || []).map((rule: IRule, _) =>
+                                    <Option key={_} value={rule.code + ""}>{rule.name}</Option>)
+                            }
+                        </Select>
+                        加上
+                        <Input value={production.value}
+                               onChange={this.handleChange.bind(this, "value", StoreRule.PRODUCTION_CODE)}/>
+                        位流水码
+                    </li>
+                    <li>
+                        <em>3</em>品名生成规则
+                        <Checkbox.Group value={(productionName.codeable || "").split(",")}
+                                        onChange={this.handlePNChange.bind(this, )}>
+                            {
+                                (productionName.rules || []).map((rule: IRule, _) => {
+                                    return <Checkbox value={rule.code + ""}>{rule.name}</Checkbox>
+                                })
+                            }
+                        </Checkbox.Group>
+                    </li>
                 </ul>
 
-                <Button type="primary" onClick={this.saveSettings.bind(this)}>保存</Button>
+                <Button type="primary" onClick={this.saveStoreRules.bind(this)}>保存</Button>
             </div>
         );
     }

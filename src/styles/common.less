@@ -102,3 +102,29 @@ body {
     }
 
 }
+
+.normal, .danger {
+    margin: 0 10px;
+    padding: 3px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+.normal {
+    background: @primary-color;
+    color: #fff;
+    display: inline-block;
+    &:hover {
+        background:  rgba(24,144,255, 0.8);
+        color: #fff;
+    }
+}
+
+.danger {
+    display: inline-block;
+    background: #f66;
+    color: #fff;
+    &:hover {
+        background: rgba(255, 96,96, 0.8);
+        color: #fff;
+    }
+}

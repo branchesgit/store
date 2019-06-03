@@ -60,8 +60,8 @@ export default class Materials extends React.Component<any, any> {
             render: (text, record) => {
                 return (
                     <div>
-                        <a onClick={this.action.bind(this, record, "modify")}>修改</a>
-                        <a onClick={this.action.bind(this, record, "remove")}>删除</a>
+                        <a className="normal" onClick={this.action.bind(this, record, "modify")}>修改</a>
+                        <a className="danger" onClick={this.action.bind(this, record, "remove")}>删除</a>
                     </div>
                 );
             }

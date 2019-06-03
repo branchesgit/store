@@ -68,7 +68,8 @@ export default {
         },
 
         * removeMaterial({payload}, {call, put}) {
-
+            const server = MaterialServer.getInstance();
+            const res = yield call(server.removeMaterial, payload);
         }
     }
 }

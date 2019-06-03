@@ -7,7 +7,7 @@ export default class MaterailHandle implements IHandle {
         Store.getInstance().dispatch({
             type: `${MATERIALS}/removeMaterial`,
             payload: {
-                record: view.props.record,
+                ...view.props.record,
             }
         })
     }
